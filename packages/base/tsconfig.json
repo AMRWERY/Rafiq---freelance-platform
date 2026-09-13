@@ -1,0 +1,16 @@
+{
+  // Base layer TypeScript configuration
+  // Editor IntelliSense for this layer piggybacks on the admin app's generated types.
+  // Run `pnpm --filter admin postinstall` (nuxt prepare) at least once after install.
+  "extends": "../../apps/admin/.nuxt/tsconfig.json",
+  "compilerOptions": {
+    // Point ~ / @ back at this layer's own root — see packages/ui/tsconfig.json for why.
+    "baseUrl": ".",
+    "paths": {
+      "~": ["."],
+      "~/*": ["./*"],
+      "@": ["."],
+      "@/*": ["./*"]
+    }
+  }
+}

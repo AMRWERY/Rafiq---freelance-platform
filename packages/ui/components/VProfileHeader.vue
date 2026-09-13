@@ -10,36 +10,10 @@
             <!-- ZONE 01: Left Identity Standoff Anchor -->
             <div class="flex items-start gap-4 shrink-0">
                 <slot name="avatar">
-                    <div class="relative shrink-0">
-                        <!-- Squircle Avatar Container -->
-                        <div :class="[
-                            'overflow-hidden border border-[#DEE1E7] flex items-center justify-center select-none bg-[#EEF0F4]',
-                            densityConfig.avatarBox,
-                        ]">
-                            <img v-if="avatarUrl && !avatarImageFailed" :src="avatarUrl" :alt="name"
-                                class="w-full h-full object-cover" @error="avatarImageFailed = true" />
-                            <span v-else :class="[
-                                'font-bold',
-                                densityConfig.avatarText,
-                                perspective === 'developer' ? 'text-[#6E56CF]' : 'text-[#2563C7]',
-                            ]">
-                                {{ initials }}
-                            </span>
-                        </div>
-
-                        <!-- Real-Time Floating Presence Pip -->
-                        <span v-if="availability === 'available'"
-                            class="absolute -top-1 -end-1 w-3.5 h-3.5 rounded-full bg-[#17A883] ring-2 ring-white"
-                            title="Available Now" aria-label="Online presence status" />
-
-                        <!-- Cryptographic Verification Shield Badge -->
-                        <span v-if="verified" :class="[
-                            'absolute -bottom-1.5 -end-1.5 p-1 rounded-full text-white ring-2 ring-white shadow-sm flex items-center justify-center',
-                            perspective === 'developer' ? 'bg-[#6E56CF]' : 'bg-[#2563C7]',
-                        ]" title="Verified Talent">
-                            <Icon name="ph:shield-check-bold" class="w-3.5 h-3.5" />
-                        </span>
-                    </div>
+                    <LazyVAvatar :src="avatarUrl" :name="name" :size="avatarSize"
+                        :role-context="perspective === 'developer' ? 'developer' : 'client'"
+                        :presence="availability === 'available' ? 'online' : availability === 'busy' ? 'busy' : 'none'"
+                        :verified="verified" />
                 </slot>
 
                 <!-- Mobile-Only Title Layout (Hidden on Desktop) -->
@@ -59,16 +33,15 @@
                         {{ name }}
                     </h2>
 
+                    <!-- Verified Status Badge using shared VBadge -->
                     <slot name="verified-badge" :verified="verified" :perspective="perspective">
-                        <div v-if="verified" :class="[
-                            'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border',
-                            perspective === 'developer'
-                                ? 'bg-[#6E56CF]/10 text-[#6E56CF] border-[#6E56CF]/20'
-                                : 'bg-[#2563C7]/10 text-[#2563C7] border-[#2563C7]/20',
-                        ]">
-                            <Icon name="ph:shield-check-bold" class="w-3.5 h-3.5" />
-                            <span>{{ perspective === 'developer' ? 'Vetted Developer' : 'Escrow Verified' }}</span>
-                        </div>
+                        <LazyVBadge v-if="verified" :tone="perspective === 'developer' ? 'developer' : 'client'"
+                            density="sm">
+                            <template #leading>
+                                <Icon name="ph:shield-check-bold" class="w-3.5 h-3.5 me-1" />
+                            </template>
+                            {{ perspective === 'developer' ? 'Vetted Developer' : 'Escrow Verified' }}
+                        </LazyVBadge>
                     </slot>
 
                     <!-- Dynamic Component for GitHub Link / Chip -->
@@ -83,10 +56,11 @@
                         </span>
                     </component>
 
-                    <div v-if="perspective === 'developer' && committerRank"
-                        class="text-xs text-[#17A883] bg-[#17A883]/10 px-2 py-0.5 rounded font-bold">
+                    <!-- Committer Rank using shared VBadge -->
+                    <LazyVBadge v-if="perspective === 'developer' && committerRank" tone="success" density="sm"
+                        class="font-bold">
                         {{ committerRank }}
-                    </div>
+                    </LazyVBadge>
                 </div>
 
                 <div class="hidden lg:block text-xs font-semibold text-[#5B6270]">
@@ -118,19 +92,18 @@
                     </span>
                 </div>
 
-                <!-- Tech Stack Monospace Tag Cluster -->
+                <!-- Tech Stack Tag Cluster using shared VBadge -->
                 <slot name="skills" :skills="skills" :visible-skills="visibleSkills"
                     :overflow-count="overflowSkillsCount">
                     <div class="flex flex-wrap items-center gap-1.5 pt-1">
-                        <span v-for="skill in visibleSkills" :key="skill"
-                            class="px-2 py-0.5 bg-[#EEF0F4] hover:bg-[#DEE1E7] text-[#14171F] text-[11px] rounded border border-[#DEE1E7] transition-colors">
+                        <LazyVBadge v-for="skill in visibleSkills" :key="skill" tone="neutral" density="sm"
+                            class="hover:bg-[#DEE1E7] transition-colors">
                             {{ skill }}
-                        </span>
+                        </LazyVBadge>
 
-                        <span v-if="overflowSkillsCount > 0"
-                            class="px-1.5 py-0.5 bg-white text-[#5B6270] text-[11px] rounded border border-[#DEE1E7]">
+                        <LazyVBadge v-if="overflowSkillsCount > 0" tone="neutral" density="sm" class="bg-white">
                             +{{ overflowSkillsCount }} more
-                        </span>
+                        </LazyVBadge>
                     </div>
                 </slot>
             </div>
@@ -150,18 +123,28 @@
                     </div>
                 </div>
 
-                <!-- Availability Status Pill -->
-                <div
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#17A883]/10 border border-[#17A883]/20 rounded-full text-xs text-[#17A883] font-semibold w-fit lg:self-end">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#17A883] animate-pulse"></span>
-                    <span>{{ availabilityText }}</span>
-                </div>
+                <!-- Availability Status Pill using shared VBadge -->
+                <LazyVBadge tone="success" density="sm" dot pulse class="rounded-full w-fit lg:self-end font-semibold">
+                    {{ availabilityText }}
+                </LazyVBadge>
 
-                <!-- Conversion CTAs: Context-Swapped Pairing with Dynamic Component Support -->
+                <!-- Conversion CTAs: Context-Swapped Pairing with Shared VButton & Dynamic Component Support -->
                 <div class="flex items-center gap-2 w-full lg:w-auto">
                     <!-- Secondary Action -->
                     <slot name="secondary-action" :perspective="perspective" :emit="emit">
-                        <component :is="secondaryActionAs || 'button'" :type="secondaryActionAs ? undefined : 'button'"
+                        <LazyVButton v-if="secondaryActionAs === 'button'" variant="secondary" :size="buttonSize"
+                            v-bind="secondaryActionProps" class="flex-1 lg:flex-initial"
+                            @click="emit('secondaryAction')">
+                            <template #leading>
+                                <slot name="secondary-action-icon">
+                                    <Icon
+                                        :name="perspective === 'developer' ? 'lucide:git-pull-request' : 'ph:chat-teardrop-dots-bold'"
+                                        class="w-4 h-4 text-[#5B6270]" />
+                                </slot>
+                            </template>
+                            {{ secondaryActionLabel }}
+                        </LazyVButton>
+                        <component :is="secondaryActionAs" v-else :type="secondaryActionAs ? undefined : 'button'"
                             v-bind="secondaryActionProps"
                             class="flex-1 lg:flex-initial inline-flex items-center justify-center gap-1.5 bg-white border border-[#DEE1E7] hover:border-[#8A909C] text-[#14171F] font-semibold rounded-lg transition-all active:scale-[0.97] cursor-pointer"
                             :class="densityConfig.buttonHeight" @click="emit('secondaryAction')">
@@ -176,7 +159,18 @@
 
                     <!-- Primary Action -->
                     <slot name="primary-action" :perspective="perspective" :emit="emit">
-                        <component :is="primaryActionAs || 'button'" :type="primaryActionAs ? undefined : 'button'"
+                        <LazyVButton v-if="primaryActionAs === 'button'" variant="primary" :size="buttonSize"
+                            :role-context="perspective === 'developer' ? 'developer' : 'client'"
+                            v-bind="primaryActionProps" class="flex-1 lg:flex-initial" @click="emit('primaryAction')">
+                            <template #leading>
+                                <slot name="primary-action-icon">
+                                    <Icon :name="perspective === 'developer' ? 'lucide:code' : 'ph:shield-check-bold'"
+                                        class="w-4 h-4" />
+                                </slot>
+                            </template>
+                            {{ primaryActionLabel }}
+                        </LazyVButton>
+                        <component :is="primaryActionAs" v-else :type="primaryActionAs ? undefined : 'button'"
                             v-bind="primaryActionProps" :class="[
                                 'flex-1 lg:flex-initial inline-flex items-center justify-center gap-1.5 text-white font-semibold rounded-lg transition-all active:scale-[0.97] cursor-pointer shadow-sm',
                                 densityConfig.buttonHeight,
@@ -234,14 +228,6 @@ const emit = defineEmits<{
     (e: 'secondaryAction'): void
 }>()
 
-const avatarImageFailed = ref(false)
-
-const initials = computed(() => {
-    if (!props.name) return '?'
-    const parts = props.name.trim().split(/\s+/)
-    return parts.length === 1 ? parts[0].slice(0, 2).toUpperCase() : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-})
-
 const githubUrl = computed(() => {
     if (!props.githubHandle) return undefined
     return `https://github.com/${props.githubHandle}`
@@ -261,22 +247,42 @@ const secondaryActionLabel = computed(() => {
 const visibleSkills = computed(() => props.skills.slice(0, props.maxVisibleSkills))
 const overflowSkillsCount = computed(() => Math.max(0, props.skills.length - props.maxVisibleSkills))
 
+const avatarSize = computed(() => {
+    switch (props.density) {
+        case 'compact':
+            return 'md'
+        case 'spotlight':
+            return 'xl'
+        case 'standard':
+        default:
+            return 'lg'
+    }
+})
+
+const buttonSize = computed(() => {
+    switch (props.density) {
+        case 'compact':
+            return 'sm'
+        case 'spotlight':
+            return 'lg'
+        case 'standard':
+        default:
+            return 'md'
+    }
+})
+
 // Density proportional styles
 const densityConfig = computed(() => {
     switch (props.density) {
         case 'compact':
             return {
                 cardPadding: 'p-4',
-                avatarBox: 'w-14 h-14 rounded-lg',
-                avatarText: 'text-base',
                 nameHeading: 'text-lg',
                 buttonHeight: 'h-8 px-3 text-xs',
             }
         case 'spotlight':
             return {
                 cardPadding: 'p-6 md:p-8',
-                avatarBox: 'w-24 h-24 rounded-2xl',
-                avatarText: 'text-2xl',
                 nameHeading: 'text-2xl',
                 buttonHeight: 'h-12 px-6 text-base',
             }
@@ -284,8 +290,6 @@ const densityConfig = computed(() => {
         default:
             return {
                 cardPadding: 'p-6',
-                avatarBox: 'w-20 h-20 md:w-24 md:h-24 rounded-xl',
-                avatarText: 'text-xl',
                 nameHeading: 'text-xl',
                 buttonHeight: 'h-10 px-4 text-sm',
             }

@@ -9,7 +9,7 @@ export default defineNuxtConfig({
 
   i18n: {
     // Override in production via the NUXT_PUBLIC_I18N_BASE_URL env var
-    baseUrl: "http://localhost:3000",
+    baseUrl: "http://localhost:3001",
   },
 
   app: {

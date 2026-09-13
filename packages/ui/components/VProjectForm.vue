@@ -64,90 +64,66 @@
 
         <!-- ==================== STEP 1: SCOPE & DETAILS ==================== -->
         <div v-show="activeStep === 'all' || activeStep === 1" class="space-y-6">
-            <!-- 2. Project Title Input & Character Counter -->
-            <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                    <label for="project-title" class="text-xs font-bold text-[#14171F] flex items-center gap-1">
-                        <span>Project Title</span>
-                        <span class="text-[#D23C3C]">*</span>
-                    </label>
-                    <span class="text-[11px] text-[#8A909C]">{{ title.length }} / 90 chars</span>
-                </div>
-                <input id="project-title" type="text" v-model="title" maxlength="90" :disabled="readOnly"
-                    placeholder="Provide a precise, technical title highlighting the architectural deliverable and core runtime."
-                    class="w-full h-10 px-3 py-2 bg-white border border-[#DEE1E7] rounded-lg text-sm outline-none hover:border-[#8A909C] focus:border-[#2563C7] focus:ring-2 focus:ring-[#2563C7]/20 transition-all disabled:bg-[#F7F7F9] disabled:cursor-not-allowed" />
-                <p class="text-[11px] text-[#5B6270]">Provide a precise, technical title highlighting the architectural
-                    deliverable and core runtime.</p>
-            </div>
+            <!-- 2. Project Title Input via Shared VInput Component -->
+            <LazyVInput id="project-title" v-model="title" label="Project Title" required show-count :max-length="90"
+                :disabled="readOnly"
+                placeholder="Provide a precise, technical title highlighting the architectural deliverable and core runtime."
+                helper-text="Provide a precise, technical title highlighting the architectural deliverable and core runtime." />
 
-            <!-- 3. Scope of Work & Minimalist Markdown Toolbar -->
-            <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                    <label for="project-scope" class="text-xs font-bold text-[#14171F] flex items-center gap-1">
-                        <span>Scope of Work & Technical Requirements</span>
-                        <span class="text-[#D23C3C]">*</span>
-                    </label>
-                    <div class="flex items-center gap-2">
-                        <button type="button" @click="isPreviewMode = !isPreviewMode"
-                            class="text-[11px] text-[#2563C7] hover:underline cursor-pointer flex items-center gap-1">
-                            <Icon :name="isPreviewMode ? 'lucide:edit-3' : 'lucide:eye'" class="w-3 h-3" />
-                            <span>{{ isPreviewMode ? 'Edit Spec' : 'Split View' }}</span>
+            <!-- 3. Scope of Work via Shared LazyVTextarea Component -->
+            <LazyVTextarea id="project-scope" v-model="scopeMarkdown" label="Scope of Work & Technical Requirements"
+                required :rows="5" :disabled="readOnly"
+                placeholder="Detailed markdown specification of architecture, APIs, endpoints, and deployment constraints...">
+                <template #headerExtra>
+                    <button type="button" @click="isPreviewMode = !isPreviewMode"
+                        class="text-[11px] text-[#2563C7] hover:underline cursor-pointer flex items-center gap-1">
+                        <Icon :name="isPreviewMode ? 'lucide:edit-3' : 'lucide:eye'" class="w-3 h-3" />
+                        <span>{{ isPreviewMode ? 'Edit Spec' : 'Split View' }}</span>
+                    </button>
+                    <span class="text-[11px] text-[#8A909C]">Markdown Supported</span>
+                </template>
+
+                <template #toolbar>
+                    <div class="flex items-center gap-1 text-xs">
+                        <button type="button" @click="appendMarkdown('**', '**')" :disabled="readOnly"
+                            class="p-1 hover:text-[#14171F] hover:bg-[#DEE1E7] rounded cursor-pointer disabled:opacity-50"
+                            title="Bold">
+                            <Icon name="lucide:bold" class="w-3.5 h-3.5" />
                         </button>
-                        <span class="text-[11px] text-[#8A909C]">Markdown Supported</span>
+                        <button type="button" @click="appendMarkdown('*', '*')" :disabled="readOnly"
+                            class="p-1 hover:text-[#14171F] hover:bg-[#DEE1E7] rounded cursor-pointer disabled:opacity-50"
+                            title="Italic">
+                            <Icon name="lucide:italic" class="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" @click="appendMarkdown('`', '`')" :disabled="readOnly"
+                            class="p-1 hover:text-[#14171F] hover:bg-[#DEE1E7] rounded cursor-pointer disabled:opacity-50"
+                            title="Code">
+                            <Icon name="lucide:code" class="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" @click="appendMarkdown('[', '](url)')" :disabled="readOnly"
+                            class="p-1 hover:text-[#14171F] hover:bg-[#DEE1E7] rounded cursor-pointer disabled:opacity-50"
+                            title="Link">
+                            <Icon name="lucide:link" class="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" @click="appendMarkdown('\n- ')" :disabled="readOnly"
+                            class="p-1 hover:text-[#14171F] hover:bg-[#DEE1E7] rounded cursor-pointer disabled:opacity-50"
+                            title="List">
+                            <Icon name="lucide:list" class="w-3.5 h-3.5" />
+                        </button>
                     </div>
-                </div>
+                    <span class="text-[10px] text-[#8A909C]">
+                        Mode: <strong class="text-[#2563C7]">{{ isPreviewMode ? 'Rendered Preview' : 'Raw Spec' }}</strong>
+                    </span>
+                </template>
 
-                <div
-                    class="border border-[#DEE1E7] rounded-lg overflow-hidden focus-within:border-[#2563C7] focus-within:ring-2 focus-within:ring-[#2563C7]/20 transition-all">
-                    <!-- Toolbar Header -->
-                    <div
-                        class="bg-[#F7F7F9] border-b border-[#DEE1E7] px-3 py-1.5 flex items-center justify-between text-[#5B6270]">
-                        <div class="flex items-center gap-1 text-xs">
-                            <button type="button" @click="appendMarkdown('**', '**')" :disabled="readOnly"
-                                class="p-1 hover:text-[#14171F] hover:bg-[#DEE1E7] rounded cursor-pointer disabled:opacity-50"
-                                title="Bold">
-                                <Icon name="lucide:bold" class="w-3.5 h-3.5" />
-                            </button>
-                            <button type="button" @click="appendMarkdown('*', '*')" :disabled="readOnly"
-                                class="p-1 hover:text-[#14171F] hover:bg-[#DEE1E7] rounded cursor-pointer disabled:opacity-50"
-                                title="Italic">
-                                <Icon name="lucide:italic" class="w-3.5 h-3.5" />
-                            </button>
-                            <button type="button" @click="appendMarkdown('`', '`')" :disabled="readOnly"
-                                class="p-1 hover:text-[#14171F] hover:bg-[#DEE1E7] rounded cursor-pointer disabled:opacity-50"
-                                title="Code">
-                                <Icon name="lucide:code" class="w-3.5 h-3.5" />
-                            </button>
-                            <button type="button" @click="appendMarkdown('[', '](url)')" :disabled="readOnly"
-                                class="p-1 hover:text-[#14171F] hover:bg-[#DEE1E7] rounded cursor-pointer disabled:opacity-50"
-                                title="Link">
-                                <Icon name="lucide:link" class="w-3.5 h-3.5" />
-                            </button>
-                            <button type="button" @click="appendMarkdown('\n- ')" :disabled="readOnly"
-                                class="p-1 hover:text-[#14171F] hover:bg-[#DEE1E7] rounded cursor-pointer disabled:opacity-50"
-                                title="List">
-                                <Icon name="lucide:list" class="w-3.5 h-3.5" />
-                            </button>
-                        </div>
-                        <span class="text-[10px] text-[#8A909C]">
-                            Mode: <strong class="text-[#2563C7]">{{ isPreviewMode ? 'Rendered Preview' : 'Raw Spec'
-                            }}</strong>
-                        </span>
-                    </div>
-
-                    <textarea v-if="!isPreviewMode" id="project-scope" v-model="scopeMarkdown" rows="5"
-                        :disabled="readOnly"
-                        class="w-full p-3 text-xs bg-white outline-none leading-relaxed text-[#14171F] placeholder:text-[#8A909C] disabled:bg-[#F7F7F9]"
-                        placeholder="Detailed markdown specification of architecture, APIs, endpoints, and deployment constraints..."></textarea>
-
-                    <div v-else
-                        class="p-3 min-h-[120px] bg-[#FAFBFD] text-xs text-[#14171F] whitespace-pre-wrap leading-relaxed">
+                <template v-if="isPreviewMode" #frameFooter>
+                    <div class="p-3 min-h-[120px] bg-[#FAFBFD] text-xs text-[#14171F] whitespace-pre-wrap leading-relaxed">
                         {{ scopeMarkdown }}
                     </div>
-                </div>
-            </div>
+                </template>
+            </LazyVTextarea>
 
-            <!-- 4. Required Technical Stack & Skills Autocomplete Stack with Dynamic Chip Component -->
+            <!-- 4. Required Technical Stack & Skills using Shared VBadge Component -->
             <div class="space-y-1.5">
                 <label class="text-xs font-bold text-[#14171F] flex items-center gap-1">
                     <span>Required Technical Stack & Skills</span>
@@ -156,16 +132,14 @@
 
                 <div
                     class="border border-[#DEE1E7] rounded-lg p-2 bg-white flex flex-wrap items-center gap-1.5 focus-within:border-[#2563C7] focus-within:ring-2 focus-within:ring-[#2563C7]/20 transition-all">
-                    <!-- Rendered Stack Chips via Dynamic Component -->
-                    <component :is="skillChipAs || 'span'" v-for="(skill, idx) in skills" :key="skill"
-                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#6E56CF]/12 text-[#6E56CF] border border-[#6E56CF]/25 text-[11px] font-semibold">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#6E56CF]"></span>
-                        <span>{{ skill }}</span>
-                        <button v-if="!readOnly" type="button" @click="removeSkill(idx)"
-                            class="hover:text-[#14171F] cursor-pointer ms-0.5">
-                            <Icon name="lucide:x" class="w-3 h-3" />
-                        </button>
-                    </component>
+                    <!-- Rendered Stack Chips via Shared VBadge Component -->
+                    <LazyVBadge v-for="(skill, idx) in skills" :key="skill" tone="developer" density="sm"
+                        :removable="!readOnly" @dismiss="removeSkill(idx)">
+                        <template #leading>
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#6E56CF] me-1"></span>
+                        </template>
+                        {{ skill }}
+                    </LazyVBadge>
 
                     <!-- Input -->
                     <input v-if="!readOnly" type="text" v-model="skillInput"
@@ -173,14 +147,13 @@
                         class="flex-1 min-w-[160px] text-xs outline-none bg-transparent placeholder:text-[#8A909C] py-1" />
                 </div>
 
-                <!-- Quick Suggestion Chips -->
-                <div v-if="!readOnly"
-                    class="flex items-center gap-1.5 text-[11px] pt-0.5 text-[#8A909C] flex-wrap">
+                <!-- Quick Suggestion Chips via Shared VBadge -->
+                <div v-if="!readOnly" class="flex items-center gap-1.5 text-[11px] pt-0.5 text-[#8A909C] flex-wrap">
                     <span>SUGGESTIONS:</span>
-                    <button v-for="sug in skillSuggestions" :key="sug" type="button" @click="addSkill(sug)"
-                        class="hover:text-[#2563C7] hover:bg-[#2563C7]/10 px-1.5 py-0.5 rounded border border-[#DEE1E7] bg-[#F7F7F9] transition-colors cursor-pointer">
+                    <LazyVBadge v-for="sug in skillSuggestions" :key="sug" tone="neutral" density="sm" selectable
+                        class="cursor-pointer hover:text-[#2563C7] hover:bg-[#2563C7]/10" @click="addSkill(sug)">
                         + {{ sug }}
-                    </button>
+                    </LazyVBadge>
                 </div>
             </div>
         </div>
@@ -192,8 +165,7 @@
                 <!-- Settlement Model Segmented Switcher -->
                 <div class="space-y-1.5">
                     <label class="text-xs font-bold text-[#14171F]">Contract Settlement Model</label>
-                    <div
-                        class="grid grid-cols-2 gap-1 p-1 bg-[#EEF0F4] border border-[#DEE1E7] rounded-lg text-xs">
+                    <div class="grid grid-cols-2 gap-1 p-1 bg-[#EEF0F4] border border-[#DEE1E7] rounded-lg text-xs">
                         <button type="button" :disabled="readOnly" @click="contractType = 'fixed'" :class="[
                             'py-2 rounded-md font-semibold transition-all cursor-pointer text-center',
                             contractType === 'fixed' ? 'bg-white text-[#2563C7] shadow-sm' : 'text-[#5B6270] hover:text-[#14171F]'
@@ -209,45 +181,43 @@
                     </div>
                 </div>
 
-                <!-- Target Delivery Window -->
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-[#14171F]">Target Delivery Window</label>
-                    <select v-model="deliveryWindow" :disabled="readOnly"
-                        class="w-full h-[54px] px-3 bg-white border border-[#DEE1E7] rounded-lg text-xs text-[#14171F] outline-none focus:border-[#2563C7] focus:ring-2 focus:ring-[#2563C7]/20 transition-all disabled:bg-[#F7F7F9]">
-                        <option>1 to 3 Months (Standard Sprint)</option>
-                        <option>3 to 6 Months (Enterprise)</option>
-                        <option>6+ Months (Multi-phase Architecture)</option>
-                    </select>
-                </div>
+                <!-- Target Delivery Window via Shared LazyVSelectInput Component -->
+                <LazyVSelectInput
+                    v-model="deliveryWindow"
+                    label="Target Delivery Window"
+                    :disabled="readOnly"
+                    :options="[
+                        '1 to 3 Months (Standard Sprint)',
+                        '3 to 6 Months (Enterprise)',
+                        '6+ Months (Multi-phase Architecture)',
+                    ]"
+                />
             </div>
 
-            <!-- 6. Contract Budget Cap Range -->
+            <!-- 6. Contract Budget Cap Range using Shared VInput Components -->
             <div class="space-y-1.5">
                 <div class="flex items-center justify-between">
                     <label class="text-xs font-bold text-[#14171F]">Contract Budget Cap Range (USD)</label>
                     <span class="text-[11px] text-[#5B6270]">Escrow Reserve Buffer: +5.0%</span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <span class="text-[10px] text-[#8A909C] block mb-1">Minimum Allocation Target</span>
-                        <div class="relative flex items-center">
-                            <span class="absolute start-3 text-xs text-[#8A909C]">$</span>
-                            <input type="number" v-model.number="minBudget" :disabled="readOnly"
-                                class="w-full h-10 ps-7 pe-3 bg-white border border-[#DEE1E7] rounded-lg text-xs text-[#14171F] outline-none focus:border-[#2563C7] focus:ring-2 focus:ring-[#2563C7]/20 disabled:bg-[#F7F7F9]" />
-                        </div>
-                    </div>
-                    <div>
-                        <span class="text-[10px] text-[#8A909C] block mb-1">Maximum Escrow Ceiling</span>
-                        <div class="relative flex items-center">
-                            <span class="absolute start-3 text-xs text-[#8A909C]">$</span>
-                            <input type="number" v-model.number="maxBudget" :disabled="readOnly"
-                                class="w-full h-10 ps-7 pe-3 bg-white border border-[#DEE1E7] rounded-lg text-xs text-[#14171F] outline-none focus:border-[#2563C7] focus:ring-2 focus:ring-[#2563C7]/20 disabled:bg-[#F7F7F9]" />
-                        </div>
-                    </div>
+                    <LazyVInput type="number" v-model.number="minBudget" label="Minimum Allocation Target"
+                        :disabled="readOnly" density="sm">
+                        <template #leading>
+                            <span class="text-xs text-[#8A909C]">$</span>
+                        </template>
+                    </LazyVInput>
+
+                    <LazyVInput type="number" v-model.number="maxBudget" label="Maximum Escrow Ceiling"
+                        :disabled="readOnly" density="sm">
+                        <template #leading>
+                            <span class="text-xs text-[#8A909C]">$</span>
+                        </template>
+                    </LazyVInput>
                 </div>
             </div>
 
-            <!-- 7. Settlement Milestone Ledger Table with Dynamic Add Button -->
+            <!-- 7. Settlement Milestone Ledger Table with Shared VButton & VInput Components -->
             <div class="space-y-3 pt-2">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
@@ -256,10 +226,17 @@
                             merge and test approval.</p>
                     </div>
 
-                    <!-- Dynamic Add Milestone CTA Component / Slot -->
+                    <!-- Add Milestone CTA with Shared VButton & Dynamic Component Support -->
                     <slot name="add-milestone" :add="addMilestone">
-                        <component :is="addMilestoneAs || 'button'" type="button" v-bind="addMilestoneProps"
-                            v-if="!readOnly" @click="addMilestone"
+                        <LazyVButton v-if="!readOnly && addMilestoneAs === 'button'" variant="secondary" size="sm"
+                            role-context="client" v-bind="addMilestoneProps" @click="addMilestone">
+                            <template #leading>
+                                <Icon name="lucide:plus" class="w-3.5 h-3.5" />
+                            </template>
+                            Add Milestone Row
+                        </LazyVButton>
+                        <component v-else-if="!readOnly" :is="addMilestoneAs" type="button" v-bind="addMilestoneProps"
+                            @click="addMilestone"
                             class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#2563C7] bg-[#2563C7]/10 hover:bg-[#2563C7]/20 rounded-lg transition-colors cursor-pointer w-fit">
                             <Icon name="lucide:plus" class="w-3.5 h-3.5" />
                             <span>Add Milestone Row</span>
@@ -280,28 +257,32 @@
                             </span>
                         </div>
 
-                        <!-- Title Input -->
-                        <input type="text" v-model="ms.title" :disabled="readOnly"
-                            placeholder="Milestone deliverable description..."
-                            class="flex-1 h-9 px-3 bg-white border border-[#DEE1E7] rounded text-xs text-[#14171F] outline-none focus:border-[#2563C7] disabled:bg-[#F7F7F9]" />
-
-                        <!-- Due Date Picker -->
-                        <input type="date" v-model="ms.dueDate" :disabled="readOnly"
-                            class="w-full sm:w-[130px] h-9 px-2 bg-white border border-[#DEE1E7] rounded text-xs text-[#5B6270] outline-none focus:border-[#2563C7] disabled:bg-[#F7F7F9]" />
-
-                        <!-- Currency Parsed Amount -->
-                        <div class="relative w-full sm:w-[130px] flex items-center shrink-0">
-                            <span class="absolute start-2.5 text-xs text-[#8A909C]">$</span>
-                            <input type="number" v-model.number="ms.amount" step="100" :disabled="readOnly"
-                                class="w-full h-9 ps-6 pe-2 bg-white border border-[#DEE1E7] rounded text-xs text-end font-bold text-[#14171F] outline-none focus:border-[#2563C7] disabled:bg-[#F7F7F9]" />
+                        <!-- Title Input with Shared VInput -->
+                        <div class="flex-1">
+                            <LazyVInput v-model="ms.title" :disabled="readOnly" density="sm"
+                                placeholder="Milestone deliverable description..." />
                         </div>
 
-                        <!-- Remove Action Button -->
-                        <button v-if="!readOnly" type="button" @click="removeMilestone(index)"
-                            class="p-2 text-[#8A909C] hover:text-[#D23C3C] hover:bg-[#D23C3C]/10 rounded transition-colors cursor-pointer shrink-0"
-                            title="Remove milestone" :disabled="milestones.length === 1">
+                        <!-- Due Date Picker with Shared VInput -->
+                        <div class="w-full sm:w-[135px]">
+                            <LazyVInput type="date" v-model="ms.dueDate" :disabled="readOnly" density="sm" />
+                        </div>
+
+                        <!-- Currency Parsed Amount with Shared VInput -->
+                        <div class="w-full sm:w-[135px]">
+                            <LazyVInput type="number" v-model.number="ms.amount" :disabled="readOnly" density="sm">
+                                <template #leading>
+                                    <span class="text-xs text-[#8A909C]">$</span>
+                                </template>
+                            </LazyVInput>
+                        </div>
+
+                        <!-- Remove Action Button with Shared VButton -->
+                        <LazyVButton v-if="!readOnly" variant="ghost" size="sm" role-context="danger"
+                            :disabled="milestones.length === 1" @click="removeMilestone(index)" title="Remove milestone"
+                            class="p-2 shrink-0">
                             <Icon name="lucide:trash-2" class="w-4 h-4" />
-                        </button>
+                        </LazyVButton>
                     </div>
                 </div>
 
@@ -360,10 +341,10 @@
                             CONFIRMATION</span>
                         <h3 class="text-base font-bold text-[#14171F] mt-0.5">{{ title }}</h3>
                     </div>
-                    <span
-                        class="px-2.5 py-1 rounded bg-[#17A883]/10 text-[#17A883] border border-[#17A883]/20 text-xs font-semibold shrink-0">
+                    <!-- Status Badge with Shared VBadge -->
+                    <VBadge tone="success" density="sm" class="shrink-0">
                         Ready for Escrow Lock
-                    </span>
+                    </VBadge>
                 </div>
 
                 <!-- Scope summary block -->
@@ -387,18 +368,17 @@
                     </div>
                     <div class="p-2.5 bg-white border border-[#DEE1E7] rounded-lg">
                         <span class="text-[10px] text-[#8A909C] block uppercase">Max Escrow Ceiling</span>
-                        <span class="font-bold text-[#2563C7]">${{ maxBudget.toLocaleString() }} USD</span>
+                        <span class="font-bold text-[#2563C7]">${{ maxBudget.toLocaleString('en-US') }} USD</span>
                     </div>
                 </div>
 
-                <!-- Stack Chips -->
+                <!-- Stack Chips with Shared VBadge -->
                 <div class="space-y-1">
                     <span class="text-xs font-bold text-[#5B6270]">Verified Runtime Stack:</span>
                     <div class="flex flex-wrap gap-1.5">
-                        <span v-for="skill in skills" :key="skill"
-                            class="px-2 py-0.5 rounded bg-[#6E56CF]/10 text-[#6E56CF] border border-[#6E56CF]/20 text-[11px] font-semibold">
+                        <VBadge v-for="skill in skills" :key="skill" tone="developer" density="sm">
                             {{ skill }}
-                        </span>
+                        </VBadge>
                     </div>
                 </div>
 
@@ -413,46 +393,66 @@
         </div>
 
         <!-- ==================== 8. FORM ACTIONS FOOTER ==================== -->
-        <!-- CTAs Pairing with Dynamic Component Support -->
+        <!-- CTAs Pairing with Shared VButton & Dynamic Component Support -->
         <div class="pt-4 border-t border-[#DEE1E7] flex flex-col sm:flex-row items-center justify-between gap-3">
             <div class="flex items-center gap-2 w-full sm:w-auto">
-                <!-- Reset Action with Dynamic Component Support -->
+                <!-- Reset Action with Shared VButton & Dynamic Component Support -->
                 <slot name="reset-action" :reset="handleReset">
-                    <component :is="resetActionAs || 'button'" :type="resetActionAs ? undefined : 'button'"
+                    <LazyVButton v-if="resetActionAs === 'button'" variant="ghost" size="sm" v-bind="resetActionProps"
+                        @click="handleReset">
+                        Reset Draft
+                    </LazyVButton>
+                    <component :is="resetActionAs" v-else :type="resetActionAs ? undefined : 'button'"
                         v-bind="resetActionProps" @click="handleReset"
                         class="w-full sm:w-auto px-4 py-2 text-xs font-semibold text-[#5B6270] hover:text-[#14171F] hover:bg-[#EEF0F4] rounded-lg transition-colors cursor-pointer">
                         Reset Draft
                     </component>
                 </slot>
 
-                <!-- Previous Step Button (when in wizard mode) -->
-                <button v-if="activeStep !== 'all' && activeStep > 1" type="button" @click="prevStep"
-                    class="px-3 py-2 text-xs font-semibold text-[#14171F] bg-[#EEF0F4] hover:bg-[#DEE1E7] rounded-lg transition-colors cursor-pointer flex items-center gap-1">
-                    <Icon name="lucide:chevron-left" class="w-3.5 h-3.5" />
-                    <span>Back</span>
-                </button>
+                <!-- Previous Step Button (when in wizard mode) using Shared VButton -->
+                <LazyVButton v-if="activeStep !== 'all' && activeStep > 1" variant="secondary" size="sm"
+                    @click="prevStep">
+                    <template #leading>
+                        <Icon name="lucide:chevron-left" class="w-3.5 h-3.5" />
+                    </template>
+                    Back
+                </LazyVButton>
             </div>
 
             <div class="flex items-center gap-2 w-full sm:w-auto">
-                <!-- Secondary / Draft Action with Dynamic Component Support -->
+                <!-- Secondary / Draft Action with Shared VButton & Dynamic Component Support -->
                 <slot name="secondary-action" :payload="currentPayload" :save="handleSaveDraft">
-                    <component :is="secondaryActionAs || 'button'" :type="secondaryActionAs ? undefined : 'button'"
+                    <LazyVButton v-if="secondaryActionAs === 'button'" variant="secondary" size="sm"
+                        v-bind="secondaryActionProps" class="flex-1 sm:flex-initial" @click="handleSaveDraft">
+                        {{ secondaryActionText || 'Save as Staging Spec' }}
+                    </LazyVButton>
+                    <component :is="secondaryActionAs" v-else :type="secondaryActionAs ? undefined : 'button'"
                         v-bind="secondaryActionProps" @click="handleSaveDraft"
                         class="flex-1 sm:flex-initial px-4 py-2 text-xs font-semibold text-[#14171F] bg-white border border-[#DEE1E7] hover:border-[#8A909C] rounded-lg transition-colors cursor-pointer">
                         {{ secondaryActionText || 'Save as Staging Spec' }}
                     </component>
                 </slot>
 
-                <!-- Next Step Button (when on step 1 or 2) -->
-                <button v-if="activeStep !== 'all' && activeStep < 3" type="button" @click="nextStep"
-                    class="flex-1 sm:flex-initial px-4 py-2 text-xs font-semibold text-white bg-[#14171F] hover:bg-[#2B303B] rounded-lg flex items-center justify-center gap-1 transition-all cursor-pointer">
+                <!-- Next Step Button using Shared VButton -->
+                <LazyVButton v-if="activeStep !== 'all' && activeStep < 3" variant="primary" size="sm"
+                    class="flex-1 sm:flex-initial bg-[#14171F] hover:bg-[#2B303B] text-white" @click="nextStep">
                     <span>Continue to Step {{ activeStep + 1 }}</span>
-                    <Icon name="lucide:chevron-right" class="w-3.5 h-3.5" />
-                </button>
+                    <template #trailing>
+                        <Icon name="lucide:chevron-right" class="w-3.5 h-3.5" />
+                    </template>
+                </LazyVButton>
 
-                <!-- Primary Action (Proceed to Escrow Deposit) with Dynamic Component Support -->
+                <!-- Primary Action (Proceed to Escrow Deposit) with Shared VButton & Dynamic Component Support -->
                 <slot name="primary-action" :payload="currentPayload" :is-overflow="isOverflow" :submit="handleSubmit">
-                    <component :is="primaryActionAs || 'button'" :type="primaryActionAs ? undefined : 'submit'"
+                    <LazyVButton v-if="primaryActionAs === 'button'" variant="primary" size="sm" role-context="client"
+                        :disabled="isOverflow" v-bind="primaryActionProps" class="flex-1 sm:flex-initial"
+                        @click="handleSubmit">
+                        <template #leading>
+                            <Icon name="ph:lock-simple-bold" class="w-3.5 h-3.5" />
+                        </template>
+                        {{ primaryActionText || 'Proceed to Escrow Deposit' }}
+                    </LazyVButton>
+                    <component :is="primaryActionAs" v-else :type="primaryActionAs ? undefined : 'submit'"
                         v-bind="primaryActionProps" :disabled="isOverflow" @click="handleSubmit" :class="[
                             'flex-1 sm:flex-initial px-5 py-2 text-xs font-semibold text-white rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-sm',
                             isOverflow
@@ -476,6 +476,11 @@ const props = withDefaults(
     {
         readOnly: false,
         step: 2,
+        stepItemAs: 'button',
+        primaryActionAs: 'button',
+        secondaryActionAs: 'button',
+        resetActionAs: 'button',
+        addMilestoneAs: 'button',
     }
 );
 

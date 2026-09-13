@@ -21,7 +21,7 @@
           ? 'Confirm payout authorization of escrow funds to verified engineering team.'
           : undefined
           ">
-        <div class="space-y-4 font-mono text-xs">
+        <div class="space-y-4 text-xs">
           <div class="bg-[#F7F7F9] border border-[#DEE1E7] p-3 rounded-lg flex justify-between items-center">
             <div>
               <span class="text-[#8A909C] text-[10px] block">CONTRACT ID</span>
@@ -39,7 +39,7 @@
             <span>Milestone Deliverable/Q4 passed & signed by tech lead.</span>
           </div>
 
-          <label class="flex items-start gap-2 text-xs font-sans text-[#5B6270] cursor-pointer pt-1">
+          <label class="flex items-start gap-2 text-xs text-[#5B6270] cursor-pointer pt-1">
             <input type="checkbox" v-model="agreementChecked" class="mt-0.5 rounded border-[#DEE1E7] text-[#2563C7]" />
             <span>I authorize instant ledger transfer from the multi-sig escrow
               reserve to vendor primary vault.</span>
@@ -47,7 +47,7 @@
 
           <!-- Simulated long overflow block -->
           <div v-if="longOverflow"
-            class="bg-[#EEF0F4]/60 border border-[#DEE1E7] p-3 rounded-lg text-[11px] font-sans text-[#5B6270] space-y-2">
+            class="bg-[#EEF0F4]/60 border border-[#DEE1E7] p-3 rounded-lg text-[11px] text-[#5B6270] space-y-2">
             <div class="font-bold text-[#14171F]">
               Smart Contract Security Verification Audit
             </div>
@@ -68,7 +68,7 @@
         </div>
 
         <template #footer="{ close }">
-          <div class="flex items-center gap-1.5 font-mono text-xs text-[#5B6270]">
+          <div class="flex items-center gap-1.5 text-xs text-[#5B6270]">
             <Icon name="ph:lock-simple-bold" class="w-3.5 h-3.5" />
             <span>256-bit Encrypted</span>
           </div>
@@ -103,6 +103,8 @@
         bio="Distributed systems engineer specializing in high-throughput transactional pipelines, Kafka clustering, and PCI-DSS compliance."
         :avatar-url="photoSrc" :perspective="currentPerspective" :density="sandboxDensity" :hourly-rate="165"
         currency="USD" :rate-type="sandboxRateType" :availability="sandboxAvailability" :verified="sandboxVerified" />
+
+      <LazyVProjectForm ref="builderRef" />
     </div>
   </div>
 </template>

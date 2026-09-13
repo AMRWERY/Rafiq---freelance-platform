@@ -1,6 +1,6 @@
 <template>
   <div
-    class="inline-flex items-center font-mono select-none"
+    class="inline-flex items-center select-none"
     :role="interactive ? 'radiogroup' : 'img'"
     :aria-label="`Rating: ${effectiveScore.toFixed(precision)} out of ${maxStars} stars`"
     @mouseleave="handleMouseLeave"
@@ -80,7 +80,7 @@
     <!-- Review Count Telemetry -->
     <span
       v-if="showCount && countLabel"
-      :class="['text-[#8A909C] font-mono', sizeStyles.countText]"
+      :class="['text-[#8A909C]', sizeStyles.countText]"
     >
       {{ countLabel }}
     </span>

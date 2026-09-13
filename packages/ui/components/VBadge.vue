@@ -4,8 +4,8 @@
     :class="[
       'inline-flex items-center justify-center rounded-[8px] border font-medium select-none transition-all duration-150',
       fontFamily === 'mono'
-        ? 'font-mono tracking-[0.01em]'
-        : 'font-sans font-semibold',
+        ? 'tracking-[0.01em]'
+        : 'font-semibold',
       densityStyles.badge,
       toneStyles.bg,
       toneStyles.text,

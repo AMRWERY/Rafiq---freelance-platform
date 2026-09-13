@@ -1,6 +1,6 @@
 <template>
     <component :is="as || 'article'" :class="[
-        'w-full bg-white border border-[#DEE1E7] rounded-[12px] font-sans text-[#14171F] transition-all',
+        'w-full bg-white border border-[#DEE1E7] rounded-[12px] text-[#14171F] transition-all',
         'shadow-none hover:border-[#8A909C]/40',
         densityConfig.cardPadding,
     ]" role="region" :aria-label="`Talent Profile Header: ${name}`">
@@ -19,7 +19,7 @@
                             <img v-if="avatarUrl && !avatarImageFailed" :src="avatarUrl" :alt="name"
                                 class="w-full h-full object-cover" @error="avatarImageFailed = true" />
                             <span v-else :class="[
-                                'font-bold font-sans',
+                                'font-bold',
                                 densityConfig.avatarText,
                                 perspective === 'developer' ? 'text-[#6E56CF]' : 'text-[#2563C7]',
                             ]">
@@ -29,12 +29,12 @@
 
                         <!-- Real-Time Floating Presence Pip -->
                         <span v-if="availability === 'available'"
-                            class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#17A883] ring-2 ring-white"
+                            class="absolute -top-1 -end-1 w-3.5 h-3.5 rounded-full bg-[#17A883] ring-2 ring-white"
                             title="Available Now" aria-label="Online presence status" />
 
                         <!-- Cryptographic Verification Shield Badge -->
                         <span v-if="verified" :class="[
-                            'absolute -bottom-1.5 -right-1.5 p-1 rounded-full text-white ring-2 ring-white shadow-sm flex items-center justify-center',
+                            'absolute -bottom-1.5 -end-1.5 p-1 rounded-full text-white ring-2 ring-white shadow-sm flex items-center justify-center',
                             perspective === 'developer' ? 'bg-[#6E56CF]' : 'bg-[#2563C7]',
                         ]" title="Verified Talent">
                             <Icon name="ph:shield-check-bold" class="w-3.5 h-3.5" />
@@ -61,7 +61,7 @@
 
                     <slot name="verified-badge" :verified="verified" :perspective="perspective">
                         <div v-if="verified" :class="[
-                            'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold font-mono border',
+                            'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border',
                             perspective === 'developer'
                                 ? 'bg-[#6E56CF]/10 text-[#6E56CF] border-[#6E56CF]/20'
                                 : 'bg-[#2563C7]/10 text-[#2563C7] border-[#2563C7]/20',
@@ -75,16 +75,16 @@
                     <component :is="githubUrl ? 'a' : 'div'" v-if="perspective === 'developer' && githubHandle"
                         :href="githubUrl" :target="githubUrl ? '_blank' : undefined"
                         :rel="githubUrl ? 'noopener noreferrer' : undefined"
-                        class="font-mono text-xs text-[#5B6270] hover:text-[#14171F] flex items-center gap-1 bg-[#EEF0F4] hover:bg-[#DEE1E7] px-2 py-0.5 rounded transition-colors group cursor-pointer">
+                        class="text-xs text-[#5B6270] hover:text-[#14171F] flex items-center gap-1 bg-[#EEF0F4] hover:bg-[#DEE1E7] px-2 py-0.5 rounded transition-colors group cursor-pointer">
                         <Icon name="lucide:git-branch" class="w-3.5 h-3.5 text-[#6E56CF]" />
                         <span>github.com/{{ githubHandle }}</span>
                         <span v-if="githubStars" class="text-[#C77D18] flex items-center font-bold">
-                            <Icon name="lucide:star" class="w-3 h-3 fill-current ml-1 mr-0.5" /> {{ githubStars }}
+                            <Icon name="lucide:star" class="w-3 h-3 fill-current ms-1 me-0.5" /> {{ githubStars }}
                         </span>
                     </component>
 
                     <div v-if="perspective === 'developer' && committerRank"
-                        class="font-mono text-xs text-[#17A883] bg-[#17A883]/10 px-2 py-0.5 rounded font-bold">
+                        class="text-xs text-[#17A883] bg-[#17A883]/10 px-2 py-0.5 rounded font-bold">
                         {{ committerRank }}
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                 </slot>
 
                 <!-- Contextual Telemetry Chips (Location, Local Time, Rating/Success) -->
-                <div class="flex flex-wrap items-center gap-3 font-mono text-xs text-[#5B6270] pt-1">
+                <div class="flex flex-wrap items-center gap-3 text-xs text-[#5B6270] pt-1">
                     <span v-if="location" class="flex items-center gap-1">
                         <Icon name="lucide:map-pin" class="w-3.5 h-3.5 text-[#8A909C]" />
                         <span>{{ location }}</span>
@@ -123,12 +123,12 @@
                     :overflow-count="overflowSkillsCount">
                     <div class="flex flex-wrap items-center gap-1.5 pt-1">
                         <span v-for="skill in visibleSkills" :key="skill"
-                            class="px-2 py-0.5 bg-[#EEF0F4] hover:bg-[#DEE1E7] text-[#14171F] font-mono text-[11px] rounded border border-[#DEE1E7] transition-colors">
+                            class="px-2 py-0.5 bg-[#EEF0F4] hover:bg-[#DEE1E7] text-[#14171F] text-[11px] rounded border border-[#DEE1E7] transition-colors">
                             {{ skill }}
                         </span>
 
                         <span v-if="overflowSkillsCount > 0"
-                            class="px-1.5 py-0.5 bg-white text-[#5B6270] font-mono text-[11px] rounded border border-[#DEE1E7]">
+                            class="px-1.5 py-0.5 bg-white text-[#5B6270] text-[11px] rounded border border-[#DEE1E7]">
                             +{{ overflowSkillsCount }} more
                         </span>
                     </div>
@@ -139,12 +139,12 @@
             <div
                 class="flex flex-col lg:items-end justify-between w-full lg:w-auto shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-[#DEE1E7] space-y-4">
                 <!-- Hourly Rate & Escrow Commitment Plaque -->
-                <div class="lg:text-right">
-                    <div class="flex items-baseline lg:justify-end gap-1 font-mono">
+                <div class="lg:text-end">
+                    <div class="flex items-baseline lg:justify-end gap-1">
                         <span class="text-2xl font-bold tracking-tight text-[#14171F]">${{ hourlyRate }}</span>
                         <span class="text-xs text-[#5B6270]">/hr. {{ currency }}</span>
                     </div>
-                    <div class="font-mono text-[11px] text-[#8A909C] flex items-center lg:justify-end gap-1 mt-0.5">
+                    <div class="text-[11px] text-[#8A909C] flex items-center lg:justify-end gap-1 mt-0.5">
                         <Icon name="ph:lock-simple-bold" class="w-3 h-3 text-[#17A883]" />
                         <span>Smart Contract Escrow Locked</span>
                     </div>
@@ -152,7 +152,7 @@
 
                 <!-- Availability Status Pill -->
                 <div
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#17A883]/10 border border-[#17A883]/20 rounded-full font-mono text-xs text-[#17A883] font-semibold w-fit lg:self-end">
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#17A883]/10 border border-[#17A883]/20 rounded-full text-xs text-[#17A883] font-semibold w-fit lg:self-end">
                     <span class="w-1.5 h-1.5 rounded-full bg-[#17A883] animate-pulse"></span>
                     <span>{{ availabilityText }}</span>
                 </div>

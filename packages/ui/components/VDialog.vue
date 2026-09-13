@@ -15,7 +15,7 @@
           :aria-labelledby="title ? titleId : undefined"
           :aria-describedby="description ? descId : undefined"
           :class="[
-            'relative w-full bg-white text-[#14171F] font-sans rounded-[16px] border border-[#DEE1E7]',
+            'relative w-full bg-white text-[#14171F] rounded-[16px] border border-[#DEE1E7]',
             'shadow-[0_8px_24px_rgba(0,0,0,0.12)] flex flex-col max-h-[90vh] overflow-hidden',
             'transition-all will-change-transform',
             sizeClasses[size],
@@ -26,7 +26,7 @@
           <div class="p-6 pb-4 border-b border-[#DEE1E7] flex flex-col gap-2">
             <!-- Top Tag & Stage Row -->
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2 font-mono text-[11px]">
+              <div class="flex items-center gap-2 text-[11px]">
                 <span
                   v-if="tag"
                   :class="[

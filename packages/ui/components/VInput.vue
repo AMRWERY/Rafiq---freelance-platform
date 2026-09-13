@@ -1,111 +1,63 @@
 <template>
   <div class="flex flex-col gap-1.5 w-full text-start">
     <!-- Header: Label, Required Asterisk, Max Length Counter / Slot Header -->
-    <div
-      v-if="label || showCount || $slots.headerExtra"
-      class="flex items-center justify-between"
-    >
-      <label
-        v-if="label"
-        :for="inputId"
-        class="text-xs font-semibold text-[#14171F] flex items-center gap-1 select-none"
-      >
+    <div v-if="label || showCount || $slots.headerExtra" class="flex items-center justify-between">
+      <label v-if="label" :for="inputId"
+        class="text-xs font-semibold text-[#14171F] flex items-center gap-1 select-none">
         <span>{{ label }}</span>
-        <span
-          v-if="required"
-          class="text-[#D23C3C] font-bold"
-          aria-hidden="true"
-          >*</span
-        >
+        <span v-if="required" class="text-[#D23C3C] font-bold" aria-hidden="true">*</span>
       </label>
 
       <div class="flex items-center gap-2">
         <slot name="headerExtra" />
-        <span
-          v-if="showCount && maxLength"
-          class="font-mono text-[11px] text-[#8A909C]"
-        >
+        <span v-if="showCount && maxLength" class="text-[11px] text-[#8A909C]">
           {{ String(fieldValue ?? "").length }}/{{ maxLength }}
         </span>
       </div>
     </div>
 
     <!-- Input Box Frame -->
-    <div
-      :class="[
-        'relative flex items-center rounded-[8px] border transition-all duration-150 ease-out',
-        densityClasses.wrapper,
-        stateClasses,
-      ]"
-    >
+    <div :class="[
+      'relative flex items-center rounded-[8px] border transition-all duration-150 ease-out',
+      densityClasses.wrapper,
+      stateClasses,
+    ]">
       <!-- Leading Icon / Addon Slot -->
-      <div
-        v-if="$slots.leading"
-        class="absolute left-3 flex items-center justify-center text-[#5B6270] pointer-events-none select-none"
-      >
+      <div v-if="$slots.leading"
+        class="absolute start-3 flex items-center justify-center text-[#5B6270] pointer-events-none select-none">
         <slot name="leading" />
       </div>
 
       <!-- Native HTML Input -->
-      <input
-        :id="inputId"
-        :type="type"
-        :value="fieldValue"
-        :placeholder="placeholder"
-        :disabled="disabled"
-        :readonly="readonly"
-        :maxlength="maxLength"
-        :aria-invalid="hasError"
-        :aria-describedby="
-          hasError
-            ? `${inputId}-error`
-            : helperText
-              ? `${inputId}-helper`
-              : undefined
-        "
-        :class="[
-          'w-full h-full bg-transparent outline-none placeholder:text-[#8A909C]',
-          densityClasses.input,
-          $slots.leading ? densityClasses.leadingPadding : '',
-          $slots.trailing || hasError ? densityClasses.trailingPadding : '',
-        ]"
-        @input="handleInput"
-        @focus="emit('focus', $event)"
-        @blur="onBlur"
-      />
+      <input :id="inputId" :type="type" :value="fieldValue" :placeholder="placeholder" :disabled="disabled"
+        :readonly="readonly" :maxlength="maxLength" :aria-invalid="hasError" :aria-describedby="hasError
+          ? `${inputId}-error`
+          : helperText
+            ? `${inputId}-helper`
+            : undefined
+          " :class="[
+            'w-full h-full bg-transparent outline-none placeholder:text-[#8A909C]',
+            densityClasses.input,
+            $slots.leading ? densityClasses.leadingPadding : '',
+            $slots.trailing || hasError ? densityClasses.trailingPadding : '',
+          ]" @input="handleInput" @focus="emit('focus', $event)" @blur="onBlur" />
 
       <!-- Trailing Action Slot / Error Warning Icon -->
-      <div
-        v-if="$slots.trailing || hasError"
-        class="absolute right-3 flex items-center gap-1.5"
-      >
+      <div v-if="$slots.trailing || hasError" class="absolute end-3 flex items-center gap-1.5">
         <!-- Injected Error Warning Indicator -->
-        <Icon
-          v-if="hasError"
-          name="lucide:alert-circle"
-          class="text-[#D23C3C] shrink-0"
-          :class="densityClasses.iconSize"
-          aria-hidden="true"
-        />
+        <Icon v-if="hasError" name="lucide:alert-circle" class="text-[#D23C3C] shrink-0"
+          :class="densityClasses.iconSize" aria-hidden="true" />
         <!-- Custom Trailing Slot (Clipboard, Eye Toggle, Currency) -->
         <slot v-else name="trailing" />
       </div>
     </div>
 
     <!-- Remediation Error Message or Helper Context Description -->
-    <p
-      v-if="hasError"
-      :id="`${inputId}-error`"
-      class="text-[11px] font-body text-[#D23C3C] flex items-center gap-1 mt-0.5"
-      role="alert"
-    >
+    <p v-if="hasError" :id="`${inputId}-error`"
+      class="text-[11px] font-body text-[#D23C3C] flex items-center gap-1 mt-0.5" role="alert">
       {{ displayError }}
     </p>
-    <p
-      v-else-if="helperText"
-      :id="`${inputId}-helper`"
-      class="text-[11px] font-body text-[#5B6270] mt-0.5"
-    >
+    <p v-else-if="helperText" :id="`${inputId}-helper`" class="text-[11px] font-body text-[#5B6270] mt-0.5">
       {{ helperText }}
     </p>
   </div>

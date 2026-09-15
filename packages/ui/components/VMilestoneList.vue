@@ -1,16 +1,12 @@
 <template>
-    <div class="space-y-6 font-sans text-[#14171F]">
-
+    <div class="space-y-6 text-[#14171F]">
         <!-- 1. Top Escrow Header Summary Card -->
         <div class="bg-white border border-[#DEE1E7] rounded-[12px] p-6 shadow-none space-y-4">
             <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 pb-4 border-b border-[#DEE1E7]">
                 <div>
-                    <div class="flex items-center gap-2 font-mono text-[11px] mb-1.5">
+                    <div class="flex items-center gap-2 text-[11px] mb-1.5">
                         <span class="text-[#5B6270]">ESCROW-ID: {{ contractId }}</span>
-                        <span
-                            class="px-2 py-0.5 rounded bg-[#17A883]/10 text-[#17A883] border border-[#17A883]/20 font-bold flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#17A883]"></span> MULTI-SIG SECURED
-                        </span>
+                        <LazyVBadge tone="teal" density="sm" dot pulse>MULTI-SIG SECURED</LazyVBadge>
                     </div>
                     <h2 class="text-xl md:text-2xl font-bold tracking-tight text-[#14171F]">
                         {{ title }}
@@ -20,7 +16,7 @@
                     </p>
                 </div>
 
-                <div class="md:text-end font-mono shrink-0">
+                <div class="md:text-end shrink-0">
                     <span class="text-[10px] text-[#8A909C] uppercase tracking-wider block">TOTAL COMMITTED
                         ESCROW</span>
                     <div class="text-2xl md:text-3xl font-bold tracking-tight text-[#14171F]">
@@ -31,7 +27,7 @@
             </div>
 
             <!-- Live Progress Bar Subcard -->
-            <div class="bg-[#F7F7F9] border border-[#DEE1E7] rounded-xl p-4 space-y-2.5 font-mono text-xs">
+            <div class="bg-[#F7F7F9] border border-[#DEE1E7] rounded-xl p-4 space-y-2.5 text-xs">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px]">
                     <span class="font-bold text-[#14171F]">
                         {{ completedCount }} of {{ internalMilestones.length }} Milestones Settled ({{ progressPercent
@@ -84,7 +80,7 @@
                     <Icon v-if="ms.state === 'paid' || ms.state === 'approved'" name="lucide:check"
                         class="w-3.5 h-3.5 stroke-[3]" />
                     <Icon v-else-if="ms.state === 'submitted'" name="lucide:clock" class="w-3.5 h-3.5" />
-                    <span v-else class="text-[10px] font-mono font-bold">{{ index + 1 }}</span>
+                    <span v-else class="text-[10px] font-bold">{{ index + 1 }}</span>
                 </div>
 
                 <!-- Milestone Card Container -->
@@ -101,7 +97,7 @@
                         <div>
                             <div class="flex items-center gap-2 mb-1">
                                 <span
-                                    class="font-mono text-[11px] text-[#8A909C] bg-[#EEF0F4] px-1.5 py-0.5 rounded font-bold">
+                                    class="text-[11px] text-[#8A909C] bg-[#EEF0F4] px-1.5 py-0.5 rounded font-bold">
                                     0{{ ms.sequence }}
                                 </span>
                                 <h3 class="font-bold text-base text-[#14171F]">
@@ -111,32 +107,30 @@
 
                             <!-- Semantic Status Pill Badge -->
                             <div class="flex items-center gap-2 pt-0.5">
-                                <span v-if="ms.state === 'paid'"
-                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#17A883]/12 text-[#17A883] border border-[#17A883]/20 font-mono text-[11px] font-semibold">
-                                    <Icon name="lucide:check" class="w-3 h-3" /> Paid
-                                </span>
-                                <span v-else-if="ms.state === 'approved'"
-                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#17A883]/12 text-[#17A883] border border-[#17A883]/20 font-mono text-[11px] font-semibold">
-                                    <Icon name="lucide:check-circle-2" class="w-3 h-3" /> Approved
-                                </span>
-                                <span v-else-if="ms.state === 'submitted'"
-                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#C77D18]/12 text-[#C77D18] border border-[#C77D18]/20 font-mono text-[11px] font-semibold">
-                                    <Icon name="lucide:clock" class="w-3 h-3" /> Submitted
-                                </span>
-                                <span v-else-if="ms.state === 'in_progress'"
-                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#6E56CF]/12 text-[#6E56CF] border border-[#6E56CF]/20 font-mono text-[11px] font-semibold">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#6E56CF] animate-pulse"></span> In
-                                    Progress
-                                </span>
-                                <span v-else
-                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#F7F7F9] text-[#8A909C] border border-[#DEE1E7] font-mono text-[11px]">
+                                <LazyVBadge v-if="ms.state === 'paid'" tone="teal" density="sm">
+                                    <template #leading><Icon name="lucide:check" class="w-3 h-3" /></template>
+                                    Paid
+                                </LazyVBadge>
+                                <LazyVBadge v-else-if="ms.state === 'approved'" tone="teal" density="sm">
+                                    <template #leading><Icon name="lucide:check-circle-2" class="w-3 h-3" /></template>
+                                    Approved
+                                </LazyVBadge>
+                                <LazyVBadge v-else-if="ms.state === 'submitted'" tone="amber" density="sm">
+                                    <template #leading><Icon name="lucide:clock" class="w-3 h-3" /></template>
+                                    Submitted
+                                </LazyVBadge>
+                                <LazyVBadge v-else-if="ms.state === 'in_progress'" tone="violet" density="sm"
+                                    dot pulse>
+                                    In Progress
+                                </LazyVBadge>
+                                <LazyVBadge v-else tone="slate" density="sm">
                                     Pending
-                                </span>
+                                </LazyVBadge>
                             </div>
                         </div>
 
                         <!-- Financial Ledger Token Column -->
-                        <div class="sm:text-end font-mono shrink-0">
+                        <div class="sm:text-end shrink-0">
                             <div class="text-base font-bold text-[#14171F]">
                                 ${{ ms.amount > 0 ? ms.amount.toLocaleString('en-US', { minimumFractionDigits: 2 }) :
                                     '0.00' }}
@@ -156,7 +150,7 @@
 
                     <!-- Cryptographic Verification / Evidence Note -->
                     <div v-if="ms.evidenceText || ms.proofTx"
-                        class="p-2.5 bg-[#F7F7F9] rounded-lg border border-[#DEE1E7] font-mono text-[11px] text-[#5B6270] flex items-center justify-between gap-2">
+                        class="p-2.5 bg-[#F7F7F9] rounded-lg border border-[#DEE1E7] text-[11px] text-[#5B6270] flex items-center justify-between gap-2">
                         <div class="flex items-center gap-1.5 truncate">
                             <Icon
                                 :name="ms.state === 'paid' ? 'ph:shield-check-bold' : ms.state === 'submitted' ? 'lucide:git-pull-request' : 'lucide:check-circle-2'"
@@ -173,26 +167,35 @@
                         class="pt-3 border-t border-[#DEE1E7] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                         <!-- Primary & Secondary Approval Pair -->
                         <div class="flex items-center gap-2">
-                            <button type="button" @click="handleApprove(ms)" :class="[
-                                'px-4 py-2 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-[0.97] cursor-pointer shadow-sm',
-                                perspective === 'developer' ? 'bg-[#6E56CF] hover:bg-[#5D3EB8]' : 'bg-[#2563C7] hover:bg-[#1D4ED8]'
-                            ]">
-                                <Icon name="ph:lock-simple-bold" class="w-3.5 h-3.5" />
-                                <span>Approve & Release Funds (${{ ms.amount.toLocaleString() }}.00)</span>
-                            </button>
+                            <LazyVButton
+                                type="button"
+                                variant="primary"
+                                size="sm"
+                                :role-context="perspective === 'developer' ? 'developer' : 'client'"
+                                @click="handleApprove(ms)"
+                            >
+                                <template #leading>
+                                    <Icon name="ph:lock-simple-bold" class="w-3.5 h-3.5" />
+                                </template>
+                                Approve & Release Funds (${{ ms.amount.toLocaleString() }}.00)
+                            </LazyVButton>
 
-                            <button type="button" @click="emit('requestChanges', ms)"
-                                class="px-3 py-2 bg-white border border-[#DEE1E7] hover:border-[#8A909C] text-[#14171F] rounded-lg text-xs font-semibold transition-colors cursor-pointer">
+                            <LazyVButton
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                :role-context="perspective === 'developer' ? 'developer' : 'client'"
+                                @click="emit('requestChanges', ms)"
+                            >
                                 Request Changes / Review Spec
-                            </button>
+                            </LazyVButton>
                         </div>
 
                         <!-- SLA Timer Telemetry Pill -->
-                        <div v-if="ms.slaCountdown"
-                            class="flex items-center gap-1 font-mono text-[10px] text-[#C77D18] bg-[#C77D18]/10 px-2 py-1 rounded w-fit">
-                            <Icon name="lucide:clock" class="w-3 h-3" />
-                            <span>{{ ms.slaCountdown }}</span>
-                        </div>
+                        <LazyVBadge v-if="ms.slaCountdown" tone="amber" density="sm">
+                            <template #leading><Icon name="lucide:clock" class="w-3 h-3" /></template>
+                            {{ ms.slaCountdown }}
+                        </LazyVBadge>
                     </div>
                 </div>
             </div>

@@ -3,9 +3,6 @@
     role="status"
     :class="[
       'inline-flex items-center justify-center rounded-[8px] border font-medium select-none transition-all duration-150',
-      fontFamily === 'mono'
-        ? 'tracking-[0.01em]'
-        : 'font-semibold',
       densityStyles.badge,
       toneStyles.bg,
       toneStyles.text,
@@ -65,17 +62,11 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  BadgeTone,
-  BadgeDensity,
-  BadgeFontFamily,
-  BadgeProps,
-} from "~/types/VBadge";
+import type { BadgeProps } from "~/types/VBadge";
 
 const props = withDefaults(defineProps<BadgeProps>(), {
   tone: "cobalt",
   density: "md",
-  fontFamily: "ui",
   dot: false,
   pulse: false,
   removable: false,

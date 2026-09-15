@@ -8,12 +8,10 @@ export type BadgeTone =
 
 export type BadgeDensity = "sm" | "md" | "lg";
 
-export type BadgeFontFamily = "ui" | "mono";
 
 export interface BadgeProps {
   tone?: BadgeTone;
   density?: BadgeDensity;
-  fontFamily?: BadgeFontFamily;
   dot?: boolean;
   pulse?: boolean;
   removable?: boolean;

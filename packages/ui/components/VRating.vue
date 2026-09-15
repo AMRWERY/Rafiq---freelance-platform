@@ -1,68 +1,31 @@
 <template>
-  <div
-    class="inline-flex items-center select-none"
-    :role="interactive ? 'radiogroup' : 'img'"
+  <div class="inline-flex items-center select-none" :role="interactive ? 'radiogroup' : 'img'"
     :aria-label="`Rating: ${effectiveScore.toFixed(precision)} out of ${maxStars} stars`"
-    @mouseleave="handleMouseLeave"
-  >
+    @mouseleave="handleMouseLeave">
     <!-- 5-Star Visual Array -->
     <div :class="['flex items-center', sizeStyles.gap]">
-      <div
-        v-for="i in maxStars"
-        :key="i"
-        :class="[
-          'relative inline-block shrink-0',
-          sizeStyles.star,
-          interactive
-            ? 'cursor-pointer transition-transform duration-150 hover:-translate-y-0.5'
-            : '',
-        ]"
-        @click="handleStarClick(i - 1, $event)"
-        @mousemove="handleStarHover(i - 1, $event)"
-      >
-        <!-- 1. Background Empty Star Track (#DEE1E7) -->
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#DEE1E7"
-          stroke-width="1.5"
-          class="w-full h-full text-[#DEE1E7] fill-[#EEF0F4]"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linejoin="round"
-            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-          />
-        </svg>
+      <div v-for="i in maxStars" :key="i" :class="[
+        'relative inline-block shrink-0',
+        sizeStyles.star,
+        interactive
+          ? 'cursor-pointer transition-transform duration-150 hover:-translate-y-0.5'
+          : '',
+      ]" @click="handleStarClick(i - 1, $event)" @mousemove="handleStarHover(i - 1, $event)">
+        <!-- 1. Background Empty Star Track -->
+        <Icon name="material-symbols:kid-star-outline" class="w-full h-full text-[#DEE1E7]" aria-hidden="true" />
 
         <!-- 2. Active Proportional Clip-Path Star Overlay (#C77D18) -->
-        <div
-          class="absolute inset-0 overflow-hidden pointer-events-none transition-[clip-path] duration-150"
-          :style="{
-            clipPath: isStaggering
-              ? 'inset(0 100% 0 0)'
-              : getStarFillPercentage(i - 1).clipPath,
-          }"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="#C77D18"
-            stroke="#C77D18"
-            stroke-width="1.5"
-            :class="[
-              'w-full h-full text-[#C77D18]',
-              isStaggering ? 'animate-star-pop' : '',
-            ]"
-            :style="{
+        <div class="absolute inset-0 overflow-hidden pointer-events-none transition-[clip-path] duration-150" :style="{
+          clipPath: isStaggering
+            ? 'inset(0 100% 0 0)'
+            : getStarFillPercentage(i - 1).clipPath,
+        }">
+          <Icon name="material-symbols:kid-star" :class="[
+            'w-full h-full text-[#C77D18]',
+            isStaggering ? 'animate-star-pop' : '',
+          ]" :style="{
               animationDelay: isStaggering ? `${(i - 1) * 60}ms` : '0ms',
-            }"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linejoin="round"
-              d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            />
-          </svg>
+            }" aria-hidden="true" />
         </div>
       </div>
     </div>
@@ -72,16 +35,11 @@
       <span :class="['font-bold text-[#14171F]', sizeStyles.scoreText]">
         {{ effectiveScore.toFixed(precision) }}
       </span>
-      <span v-if="!showCount" class="text-[#8A909C] text-xs ms-1"
-        >/ {{ maxStars.toFixed(1) }}</span
-      >
+      <span v-if="!showCount" class="text-[#8A909C] text-xs ms-1">/ {{ maxStars.toFixed(1) }}</span>
     </div>
 
     <!-- Review Count Telemetry -->
-    <span
-      v-if="showCount && countLabel"
-      :class="['text-[#8A909C]', sizeStyles.countText]"
-    >
+    <span v-if="showCount && countLabel" :class="['text-[#8A909C]', sizeStyles.countText]">
       {{ countLabel }}
     </span>
   </div>
@@ -212,10 +170,12 @@ defineExpose({
     transform: scale(1);
     opacity: 0.2;
   }
+
   50% {
     transform: scale(1.18);
     opacity: 1;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;

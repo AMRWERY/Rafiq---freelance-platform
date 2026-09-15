@@ -18,8 +18,8 @@
 
       <LazyVDialog v-model="isModalOpen" :size="sandboxSize" :role-context="isDestructive ? 'danger' : currentRole"
         tag="MILESTONE_EXECUTION" stage="Stage 03 / Escrow" title="Release Milestone Payment" :description="showSubtitle
-            ? 'Confirm payout authorization of escrow funds to verified engineering team.'
-            : undefined
+          ? 'Confirm payout authorization of escrow funds to verified engineering team.'
+          : undefined
           ">
         <div class="space-y-4 text-xs">
           <div class="bg-[#F7F7F9] border border-[#DEE1E7] p-3 rounded-lg flex justify-between items-center">
@@ -163,6 +163,8 @@
       <LazyVProjectForm ref="builderRef" />
 
       <LazyVMilestoneList ref="trackerRef" :perspective="currentPerspective" />
+
+      <LazyVProposalCard perspective="developer" :density="sandboxDensity" />
     </div>
   </div>
 </template>
